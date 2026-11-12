@@ -1,0 +1,25 @@
+# Dashboard theme (Phase 2).
+# Colours here mirror src/theme.py — keep the two in sync if you change them.
+[theme]
+base = "dark"
+primaryColor = "#6C8FFF"
+backgroundColor = "#0A0F1A"
+secondaryBackgroundColor = "#111A2B"
+textColor = "#E8EEF9"
+borderColor = "#223049"
+baseRadius = "10px"
+font = "sans-serif"
+headingFont = "sans-serif"
+chartCategoricalColors = [
+  "#5B8DEF",
+  "#F0B429",
+  "#A78BFA",
+  "#2DD4BF",
+  "#FB7185",
+  "#9CCC65",
+]
+
+[theme.sidebar]
+backgroundColor = "#0C1322"
+secondaryBackgroundColor = "#141E30"
+borderColor = "#223049"

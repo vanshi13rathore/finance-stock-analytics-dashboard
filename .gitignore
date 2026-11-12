@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data cache (large, reproducible via Yahoo Finance)
+data/bank_prices.csv
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Phase 1 pre-audit snapshot (local safety copy, not part of the project)
+.phase1_backup/
