@@ -18,8 +18,8 @@ python3 --version
 ## 2. Clone and install
 
 ```bash
-git clone https://github.com/vanshi13rathore/finance-stock-analysis.git
-cd finance-stock-analysis
+git clone https://github.com/vanshi13rathore/finance-stock-analytics-dashboard.git
+cd finance-stock-analytics-dashboard
 pip install -r requirements.txt
 ```
 

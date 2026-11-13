@@ -5,8 +5,8 @@ Thanks for helping improve this project! Small, focused pull requests are best.
 ## Development setup
 
 ```bash
-git clone https://github.com/vanshi13rathore/finance-stock-analysis.git
-cd finance-stock-analysis
+git clone https://github.com/vanshi13rathore/finance-stock-analytics-dashboard.git
+cd finance-stock-analytics-dashboard
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
 pytest tests/ -q   # 112 tests, must be green before you start
