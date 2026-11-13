@@ -171,3 +171,21 @@ def test_download_buttons_are_present():
     assert "Download correlations (CSV)" in labels
     assert "Download allocations (CSV)" in labels
     assert "Download price data (CSV)" in labels
+
+
+# ---------------------------------------------------------------------------
+# Portfolio terminology
+# ---------------------------------------------------------------------------
+def test_portfolio_tab_labels_the_simulation_honestly():
+    """The tab must describe a random simulation, not a solved efficient frontier."""
+    at = run_app()
+    markdown = all_markdown(at)
+    # Strip markdown emphasis and line breaks so the wording itself is asserted.
+    flat = " ".join(markdown.replace("*", "").split())
+
+    assert "Monte Carlo Portfolio Simulation — Risk vs. Return" in flat
+    assert "randomly generated long-only portfolio" in flat
+    assert "not an optimised frontier" in flat
+    assert "not a solved efficient frontier" in flat
+    assert "not predictions of future returns" in flat
+    assert "no transaction" in flat and "rebalancing" in flat

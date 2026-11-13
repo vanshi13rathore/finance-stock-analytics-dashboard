@@ -58,7 +58,7 @@ path, and reproducible numbers — not a one-off notebook cell.
   Correlations, Portfolio) with KPI cards, interactive charts, formatted tables
   and CSV downloads.
 - **Reproducibility** — fixed seeds, one config module, pinned dependency
-  requirements, 96 offline tests.
+  requirements, 112 offline tests.
 
 ---
 
@@ -94,10 +94,10 @@ finance-stock-analysis/
 │   └── theme.py               # Dashboard design system: palette, CSS, KPI cards, Plotly template
 ├── .streamlit/config.toml     # Dark theme + categorical colours (mirrors src/theme.py)
 ├── tests/
-│   ├── test_metrics.py        # 42 tests: financial maths + data layer
+│   ├── test_metrics.py        # 57 tests: financial maths + data layer
 │   ├── test_theme.py          # 27 tests: palette, formatters, HTML escaping, Plotly template
 │   ├── test_charts.py         # 16 tests: chart structure, colours, scales, empty input
-│   └── test_app.py            # 11 tests: widgets, date filter, validation, downloads
+│   └── test_app.py            # 12 tests: widgets, date filter, validation, downloads
 ├── screenshots/               # Local dashboard captures (not tracked in git)
 ├── data/                      # summary.csv, correlation.csv (price cache is git-ignored)
 ├── images/                    # Generated matplotlib charts
@@ -163,7 +163,7 @@ window and a synthetic-data toggle.
 ### 2d. Tests
 
 ```bash
-pytest tests/ -q     # 96 passed, no network required
+pytest tests/ -q     # 112 passed, no network required
 ```
 
 ---
@@ -223,7 +223,7 @@ its CAGR is +8.3%, and BAC's arithmetic figure is +8.6% while its CAGR is
 −7.9%. Both are correct for their own definition; the tables label the
 arithmetic figure as "annual mean return" for that reason.
 
-### Portfolio simulation — what it is
+### Monte Carlo Portfolio Simulation — Risk vs. Return
 
 `src/portfolio.py` draws random **long-only** weight vectors (weights ≥ 0,
 normalised to sum to 100%) and evaluates each one with the sample mean vector
@@ -236,8 +236,14 @@ and covariance matrix of daily returns, annualized by 252 trading days.
   highlighted points are best-of-sample, not mathematically optimal.
 - It is **descriptive, not predictive**: inputs are full-sample means and
   covariances, so the exercise contains look-ahead information, is not a
-  backtest, and says nothing about future performance. Nothing here is
-  investment advice.
+  backtest, and says nothing about future performance.
+- Its **assumptions** — buy-and-hold for the whole window, no transaction
+  costs, taxes or rebalancing, stable means/covariances, and uniform random
+  sampling instead of constrained optimisation — are all violated to some degree
+  in practice.
+
+Nothing here is investment advice, and past performance of these six banks is
+not a forecast of their future returns.
 
 ---
 
@@ -285,7 +291,7 @@ is interactive (hover, zoom, pan) and the four tabs share one design system.
 | **Prices** | Per-bank KPI cards (total return, volatility, Sharpe), adjusted closes with the 2008–09 crisis band and optional log axis, normalized performance, growth of $1, moving averages and daily-return bars for a focus bank, price table + CSV |
 | **Risk** | Headline risk cards, formatted metrics table (annual return/volatility, Sharpe, Sortino, max drawdown, VaR 95%, best/worst day, growth of $1) with per-column definitions, risk-vs-return scatter, underwater drawdown, rolling volatility, return distributions, best/worst days |
 | **Correlations** | Heatmap fixed to −1…+1, average/strongest/weakest-pair cards, matrix table + CSV, and a plain-English interpretation noting correlation is not causation |
-| **Portfolio** | Monte Carlo risk-vs-return cloud coloured by Sharpe, max-Sharpe and min-volatility allocations with percentage weights, allocation table + CSV, and an expander explaining the method's limits |
+| **Portfolio** | **Monte Carlo Portfolio Simulation — Risk vs. Return**: randomly generated long-only weight vectors plotted as a risk-vs-return cloud coloured by Sharpe, with the best-of-sample max-Sharpe and min-volatility allocations, percentage weights, allocation table + CSV, and an expander listing the method's assumptions and limits |
 
 Design and UX details:
 
@@ -314,14 +320,47 @@ drawdown, rolling volatility, return distributions), Correlations (fixed −1…
 heatmap, pair cards, matrix table, interpretation panel) and Portfolio (Monte
 Carlo cloud with the two highlighted allocations and a weights table).
 
-> Dashboard screenshots are **not** part of this repository: the images in the
-> local `screenshots/` folder were captured during the Phase 2 redesign and still
-> show the old header status chip ("Verified market prices"), which has since
-> been replaced by the factual labels "Cached historical data" / "Historical
-> data loaded" (prices are loaded from Yahoo Finance, not independently
-> verified). The chart images under `images/` below are committed and current
-> apart from the portfolio chart title, which is now "Monte Carlo Risk-Return
-> Cloud".
+Screenshots of each tab are below. They were captured from this dashboard
+running on the cached Yahoo Finance snapshot — six banks, 3 Jan 2006 → 31 Dec
+2015, 2,517 sessions, `Adj Close` basis — so the header status chip reads
+**Cached historical data** rather than a live source.
+
+---
+
+## 📷 Dashboard screenshots
+
+### Prices
+
+![Prices tab](screenshots/prices.png)
+
+Total return, annualized volatility and Sharpe ratio per bank, above the adjusted
+closing price history with the 2008–09 crisis shaded.
+
+### Risk
+
+![Risk tab](screenshots/risk.png)
+
+Headline risk cards — best risk-adjusted, highest volatility, deepest drawdown,
+worst daily VaR — above the per-bank table of annual return, volatility, Sharpe,
+Sortino and max drawdown.
+
+### Correlations
+
+![Correlations tab](screenshots/correlations.png)
+
+Average pairwise correlation (0.72), strongest pair (BAC–WFC, ρ = 0.83) and
+weakest (MS–WFC, ρ = 0.60), above the full daily-return correlation matrix.
+
+### Portfolio
+
+![Portfolio tab](screenshots/portfolio.png)
+
+Monte Carlo cloud of 5,000 randomly generated long-only portfolios, coloured by
+Sharpe ratio, with the max-Sharpe and minimum-volatility portfolios marked. It
+explores the risk–return region — it is not an optimised frontier.
+
+> These four images live in the local `screenshots/` folder, which is excluded
+> from Git (see `.gitignore`) until it is explicitly approved for the repository.
 
 ---
 

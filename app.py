@@ -804,9 +804,10 @@ with tab_corr:
 # ===========================================================================
 with tab_port:
     section(
-        "Monte Carlo portfolio simulation — risk vs. return",
-        "Random long-only weights simulated over the selected history. Each dot "
-        "is one hypothetical mix; colour shows its Sharpe ratio.",
+        "Monte Carlo Portfolio Simulation — Risk vs. Return",
+        "Each dot is one randomly generated long-only portfolio, evaluated on the "
+        "returns in the selected window; colour shows its Sharpe ratio. The cloud "
+        "explores the risk–return region — it is not an optimised frontier.",
     )
 
     port_returns = returns.dropna()
@@ -956,16 +957,22 @@ with tab_port:
 
             with st.expander("How to read this simulation"):
                 st.markdown(
-                    "- Weights are drawn uniformly at random and normalised so each "
-                    "portfolio sums to 100%; **no short selling** is allowed.\n"
+                    "- Weights are drawn **uniformly at random** and normalised so "
+                    "each portfolio sums to 100%; **no short selling** and no other "
+                    "constraints are applied.\n"
                     "- Expected return is `weights · mean daily return × 252`; "
                     "volatility is `√(wᵀΣw) × √252` using the covariance of the "
                     "same daily returns.\n"
                     "- Because thousands of random mixes are sampled, the cloud "
-                    "*approximates* the achievable region. It is **not** a solved "
-                    "efficient frontier and the stars are not optimal portfolios in "
-                    "a mathematical sense.\n"
+                    "*approximates* the achievable region. No optimizer is run, so "
+                    "this is **not** a solved efficient frontier and the stars are "
+                    "best-of-sample mixes, not mathematically optimal portfolios.\n"
+                    "- Assumptions: buy-and-hold for the whole window, no transaction "
+                    "costs, taxes or rebalancing, and stable means/covariances. Real "
+                    "portfolios face all of these.\n"
                     "- Weights use full-sample means and covariances, so the result "
-                    "is descriptive and contains look-ahead information. It is not "
-                    "a backtest and not a recommendation."
+                    "is descriptive and contains look-ahead information. Historical "
+                    "results are **not** predictions of future returns, the "
+                    "simulation is not a backtest, and nothing here is a "
+                    "recommendation."
                 )

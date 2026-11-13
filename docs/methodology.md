@@ -162,7 +162,7 @@ days cluster in 2008–2009.
 
 ## Portfolios (`src/portfolio.py`)
 
-### Method: Monte Carlo search — **not** a solved efficient frontier
+### Monte Carlo Portfolio Simulation — Risk vs. Return
 
 1. Draw `N` (default 5,000) random **long-only** weight vectors (weights ≥ 0,
    normalised to sum to 1).
@@ -183,6 +183,11 @@ What this method does and does not deliver:
 - Weights use **full-sample** means and covariances, i.e. information no 2006
   investor had. The exercise is descriptive, contains look-ahead bias, is not a
   backtest, and makes **no claim about future performance**.
+- Assumptions baked into the numbers: buy-and-hold for the whole window, no
+  transaction costs, no taxes, no rebalancing, and stable means/covariances.
+  Real portfolios pay all of these.
+- Historical results — including the two highlighted allocations — are **not**
+  predictions or guaranteed returns.
 - Nothing here is investment advice or a trading recommendation.
 
 For exact constrained optima (target return, max weight, no shorting), see
@@ -219,4 +224,7 @@ where `μ` and `Σ` are the sample mean and covariance of daily returns.
    growth rates; see the CAGR note above.
 8. **Correlation ≠ causation** — co-movement reflects shared sector/market
    exposure, not one bank driving another.
-9. **Not investment advice** — this is an educational analysis of historical data.
+9. **Simulation assumptions** — the portfolio tab assumes buy-and-hold, no
+   transaction costs, no taxes, no rebalancing and stable inputs; uniform random
+   sampling only approximates the achievable region.
+10. **Not investment advice** — this is an educational analysis of historical data.

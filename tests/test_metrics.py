@@ -399,3 +399,187 @@ def test_return_distribution_plot_handles_single_ticker():
     import matplotlib.pyplot as plt
 
     plt.close(fig)
+
+
+# --- Phase 3: data-source provenance -----------------------------------------
+def _raw_download(tickers, periods=40, start="2020-01-01"):
+    """A yfinance-shaped raw frame: MultiIndex (ticker, field), Adj Close present."""
+    idx = pd.bdate_range(start, periods=periods)
+    fields = ["Open", "High", "Low", "Close", "Adj Close", "Volume"]
+    cols = pd.MultiIndex.from_product([tickers, fields])
+    data = np.zeros((periods, len(tickers) * len(fields)))
+    for i, ticker in enumerate(tickers):
+        base = np.linspace(10.0, 20.0, periods) * (i + 1)
+        for j, field in enumerate(fields):
+            data[:, i * len(fields) + j] = base if field != "Volume" else 1_000.0
+    return pd.DataFrame(data, index=idx, columns=cols)
+
+
+def test_successful_download_is_labelled_yahoo(monkeypatch):
+    """A real (here: stubbed network) response must be reported as live Yahoo data."""
+    raw = _raw_download(["AAA", "BBB"])
+    monkeypatch.setattr(data_mod, "download_prices", lambda *a, **k: raw)
+
+    loaded = data_mod.load_prices_detailed(
+        ["AAA", "BBB"], "2020-01-01", "2020-03-01", cache_path=None, use_cache=False)
+
+    assert loaded.source == "yahoo"
+    assert loaded.price_basis == "Adj Close"
+    assert list(loaded.close.columns) == ["AAA", "BBB"]  # caller's order preserved
+    assert loaded.note == ""
+    assert not loaded.close.isna().any().any()
+
+
+def test_covering_cache_is_labelled_cache_and_skips_the_download(tmp_path, monkeypatch):
+    raw = _raw_download(["AAA"], periods=80)
+    cache = tmp_path / "cache.csv"
+    raw.to_csv(cache)
+
+    def forbidden(*args, **kwargs):  # pragma: no cover - must never run
+        raise AssertionError("download called even though the cache covers the request")
+
+    monkeypatch.setattr(data_mod, "download_prices", forbidden)
+    loaded = data_mod.load_prices_detailed(["AAA"], "2020-01-20", "2020-02-20",
+                                           cache_path=cache)
+    assert loaded.source == "cache"
+    assert loaded.note == ""
+
+
+def test_cache_missing_a_ticker_is_not_reused(tmp_path, monkeypatch):
+    """A cache that only covers part of the request must not masquerade as the answer."""
+    raw = _raw_download(["AAA"], periods=80)
+    cache = tmp_path / "cache.csv"
+    raw.to_csv(cache)
+
+    monkeypatch.setattr(data_mod, "download_prices",
+                        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("offline")))
+    with pytest.raises(data_mod.DataDownloadError):
+        data_mod.load_prices_detailed(["AAA", "BBB"], "2020-01-20", "2020-02-20",
+                                      cache_path=cache, synthetic_fallback=False)
+
+
+def test_fallback_never_claims_live_or_cached(monkeypatch):
+    monkeypatch.setattr(data_mod, "download_prices",
+                        lambda *a, **k: (_ for _ in ()).throw(RuntimeError("offline")))
+    loaded = data_mod.load_prices_detailed(["AAA"], "2020-01-01", "2020-03-01",
+                                           cache_path=None)
+    assert loaded.source == "synthetic"
+    assert loaded.source not in {"yahoo", "cache"}
+    assert loaded.price_basis == "synthetic"
+
+
+def test_ticker_missing_from_the_response_is_dropped_with_a_warning(monkeypatch):
+    raw = _raw_download(["AAA"])  # BBB requested but absent upstream
+    monkeypatch.setattr(data_mod, "download_prices", lambda *a, **k: raw)
+    with pytest.warns(UserWarning, match="No data returned"):
+        loaded = data_mod.load_prices_detailed(
+            ["AAA", "BBB"], "2020-01-01", "2020-03-01", cache_path=None, use_cache=False)
+    assert list(loaded.close.columns) == ["AAA"]
+    assert loaded.source == "yahoo"
+
+
+def test_empty_download_frame_raises_without_fallback(monkeypatch):
+    monkeypatch.setattr(data_mod, "download_prices", lambda *a, **k: pd.DataFrame())
+    with pytest.raises(data_mod.DataDownloadError):
+        data_mod.load_prices_detailed(["AAA"], "2020-01-01", "2020-03-01",
+                                      cache_path=None, use_cache=False,
+                                      synthetic_fallback=False)
+
+
+# --- Phase 3: financial metric edge cases ------------------------------------
+def test_single_observation_yields_no_risk_metrics():
+    """One return gives no dispersion: volatility/Sharpe/Sortino must be NaN, not 0."""
+    prices = pd.DataFrame({"AAA": [10.0, 11.0]})       # exactly one daily return
+    rets = metrics.daily_returns(prices)
+    assert len(rets) == 1
+    assert np.isnan(metrics.annualized_volatility(rets)["AAA"])
+    assert np.isnan(metrics.sharpe_ratio(rets)["AAA"])
+    assert np.isnan(metrics.sortino_ratio(rets)["AAA"])
+
+
+def test_sortino_is_nan_when_no_day_falls_below_the_target():
+    rets = pd.DataFrame({"AAA": [0.02, 0.01, 0.03]})
+    assert np.isnan(metrics.sortino_ratio(rets, 0.02)["AAA"])
+
+
+def test_var_of_constant_returns_equals_that_return():
+    """With no dispersion the 5th percentile is the value itself - even if positive."""
+    rets = pd.DataFrame({"AAA": [0.01] * 30})
+    assert metrics.value_at_risk(rets, 0.05)["AAA"] == pytest.approx(0.01)
+    assert metrics.conditional_var(rets, 0.05)["AAA"] == pytest.approx(0.01)
+
+
+def test_drawdown_of_a_flat_series_is_zero():
+    prices = pd.DataFrame({"AAA": [10.0] * 10})
+    assert metrics.max_drawdown(prices)["AAA"] == pytest.approx(0.0)
+    assert (metrics.drawdown_series(prices)["AAA"] == 0).all()
+
+
+def test_sharpe_treats_the_risk_free_rate_as_annual():
+    rng = np.random.default_rng(3)
+    rets = pd.DataFrame({"AAA": rng.normal(0.0005, 0.01, 300)})
+    rf = 0.05
+    vol = rets["AAA"].std() * np.sqrt(252)
+    expected = (rets["AAA"].mean() * 252 - rf) / vol
+    assert metrics.sharpe_ratio(rets, rf)["AAA"] == pytest.approx(expected)
+
+
+def test_annualized_return_is_arithmetic_and_not_cagr():
+    """+100% then -50%: compounded growth is 0, so arithmetic annualization differs."""
+    prices = pd.DataFrame({"AAA": [100.0, 200.0, 100.0]})
+    rets = metrics.daily_returns(prices)
+    growth = metrics.cumulative_returns(rets)["AAA"].iloc[-1]
+    assert growth == pytest.approx(1.0)                       # no compounded return
+    assert metrics.annualized_return(rets)["AAA"] == pytest.approx(
+        rets["AAA"].mean() * 252)
+    # Round trip: the price ends where it started, so CAGR is 0 while the
+    # arithmetic annualized mean is large and positive.
+    cagr = (prices["AAA"].iloc[-1] / prices["AAA"].iloc[0]) ** (252 / (len(prices) - 1)) - 1
+    assert cagr == pytest.approx(0.0)
+    assert metrics.annualized_return(rets)["AAA"] == pytest.approx(63.0)
+    assert metrics.annualized_return(rets)["AAA"] > cagr
+
+    # A losing path: arithmetic annualization stays positive while CAGR is
+    # deeply negative - the reason the summary column is "Ann. Return", not CAGR.
+    losing = pd.DataFrame({"AAA": [100.0, 150.0, 90.0]})
+    l_rets = metrics.daily_returns(losing)
+    l_cagr = (losing["AAA"].iloc[-1] / losing["AAA"].iloc[0]) ** (
+        252 / (len(losing) - 1)) - 1
+    assert metrics.annualized_return(l_rets)["AAA"] == pytest.approx(0.05 * 252)
+    assert metrics.annualized_return(l_rets)["AAA"] > 0 > l_cagr
+
+
+# --- Phase 3: portfolio simulation assumptions -------------------------------
+def test_single_asset_simulation_is_fully_invested():
+    rng = np.random.default_rng(7)
+    rets = pd.DataFrame({"AAA": rng.normal(0.0004, 0.012, 250)})
+    sims, best = portfolio.random_portfolios(rets, n_portfolios=50, seed=5)
+
+    assert best.max_sharpe_weights["AAA"] == pytest.approx(1.0)
+    assert best.min_vol_weights["AAA"] == pytest.approx(1.0)
+    assert best.min_vol_vol == pytest.approx(rets["AAA"].std(ddof=1) * np.sqrt(252))
+    assert best.min_vol_return == pytest.approx(rets["AAA"].mean() * 252)
+
+
+def test_portfolio_volatility_includes_the_covariance_term():
+    rets = pd.DataFrame({"AAA": [0.01, -0.02, 0.015, 0.0, 0.005],
+                         "BBB": [0.02, -0.01, 0.0, 0.01, -0.005]})
+    w = np.array([0.5, 0.5])
+    ret, vol, sharpe = portfolio.portfolio_performance(w, rets.mean(), rets.cov(), 0.02)
+    manual_var = (0.25 * rets["AAA"].var() + 0.25 * rets["BBB"].var()
+                  + 0.5 * rets["AAA"].cov(rets["BBB"]))
+    assert vol == pytest.approx(np.sqrt(manual_var) * np.sqrt(252))
+    assert ret == pytest.approx(0.5 * (rets["AAA"].mean() + rets["BBB"].mean()) * 252)
+    assert sharpe == pytest.approx((ret - 0.02) / vol)
+
+
+def test_reported_best_portfolios_are_the_best_sampled_mixes():
+    rng = np.random.default_rng(13)
+    rets = pd.DataFrame(rng.normal(0.0003, 0.01, (200, 4)),
+                        columns=["AAA", "BBB", "CCC", "DDD"])
+    sims, best = portfolio.random_portfolios(rets, n_portfolios=500, seed=3)
+
+    assert best.max_sharpe_ratio == pytest.approx(sims["sharpe"].max())
+    assert best.min_vol_vol == pytest.approx(sims["volatility"].min())
+    assert (best.max_sharpe_weights >= 0).all()
+    assert best.max_sharpe_weights.sum() == pytest.approx(1.0)

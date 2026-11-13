@@ -46,7 +46,7 @@ arithmetic figure is positive.
 - **Return distributions** (`return_distributions.png`) — roughly bell-shaped
   but with **fat tails**: ±3σ days occur far more often than a normal model
   predicts (that's why we use historical, not parametric, VaR).
-- **Portfolio cloud** (`efficient_frontier.png`, legacy filename) — each dot is
+- **Monte Carlo portfolio cloud** (`efficient_frontier.png`, legacy filename) — each dot is
   a random long-only mix; ★ marks the best-of-sample max-Sharpe and
   min-volatility mixes. Because correlations are high, the cloud is relatively
   flat: mixing banks cuts volatility only modestly versus holding the best

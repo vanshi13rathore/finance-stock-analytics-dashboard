@@ -18,6 +18,9 @@ data/bank_prices.csv
 .vscode/
 .idea/
 
+# Dashboard screenshots (excluded until explicitly approved for the repo)
+screenshots/
+
 # Test / coverage
 .pytest_cache/
 .coverage

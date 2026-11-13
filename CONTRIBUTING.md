@@ -9,7 +9,7 @@ git clone https://github.com/vanshi13rathore/finance-stock-analysis.git
 cd finance-stock-analysis
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
-pytest tests/ -q   # 96 tests, must be green before you start
+pytest tests/ -q   # 112 tests, must be green before you start
 ```
 
 ## Workflow
@@ -39,7 +39,7 @@ pytest tests/ -q   # 96 tests, must be green before you start
 - New metrics/logic in `src/` **must** come with unit tests in `tests/`.
 - Tests must be **deterministic** (fixed seeds) and **offline** (use
   `data.generate_synthetic_prices()` fixtures, never Yahoo).
-- Run the suite: `pytest tests/ -q` (96 offline tests, no network needed).
+- Run the suite: `pytest tests/ -q` (112 offline tests, no network needed).
 
 ## Docs
 

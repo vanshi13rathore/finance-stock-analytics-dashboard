@@ -22,7 +22,7 @@ understand *what* is computed and *why*.
 | 4 | Risk analysis | Summary table, best/worst days, rolling vol, drawdown, risk-vs-return |
 | 5 | Correlation & distributions | Heatmap, histograms with ±3σ guides, sampled scatter matrix |
 | 6 | Trend | BAC with 30/50-day moving averages |
-| 7 | Portfolio simulation | Monte Carlo random-portfolio cloud, max-Sharpe weights |
+| 7 | Portfolio simulation | Monte Carlo Portfolio Simulation — Risk vs. Return (random weights, max-Sharpe) |
 | 8 | Key findings | Auto-derived bullet findings (never goes stale) |
 
 ### Tips
@@ -79,10 +79,12 @@ can be mapped back to banks at a glance.
    volatility, return distributions, best/worst days, CSV download
 3. **Correlations** — average/strongest/weakest-pair cards, Plotly heatmap fixed
    to −1…+1, correlation matrix + CSV, and a plain-English interpretation
-4. **Portfolio** — Monte Carlo risk-vs-return cloud with adjustable simulation
-   count, the best-of-sample max-Sharpe and min-volatility allocations shown as
-   percentages, allocation table + CSV. The cloud approximates the achievable
-   region; it is not a solved efficient frontier and not a forecast.
+4. **Portfolio** — **Monte Carlo Portfolio Simulation — Risk vs. Return**: a
+   risk-vs-return cloud of randomly generated long-only weights, with adjustable
+   simulation count, the best-of-sample max-Sharpe and min-volatility allocations
+   shown as percentages, and an allocation table + CSV. The cloud approximates
+   the achievable region; it is not a solved efficient frontier and not a
+   forecast.
 
 ### Reading the charts
 

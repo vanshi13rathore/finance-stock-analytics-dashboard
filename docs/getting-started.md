@@ -77,7 +77,7 @@ KPI cards, interactive Plotly charts and four tabs
 pytest tests/ -q
 ```
 
-Expected result: `96 passed` (financial maths, data layer, theme, chart and
+Expected result: `112 passed` (financial maths, data layer, theme, chart and
 app-level tests). No test needs network access — they use the cached CSV in `data/` and
 fixed-seed synthetic prices.
 

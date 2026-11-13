@@ -16,7 +16,7 @@ src/
   charts.py                # tables → interactive Plotly figures (dashboard)
   theme.py                 # dashboard design system (palette, CSS, Plotly template)
   portfolio.py             # Monte Carlo long-only portfolio simulation
-tests/                     # 96 offline tests
+tests/                     # 112 offline tests
   test_metrics.py          # financial maths + data layer
   test_charts.py           # Plotly chart contracts
   test_theme.py            # palette, formatters, escaping, template
