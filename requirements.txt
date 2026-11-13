@@ -1,8 +1,13 @@
 # Core dependencies (install with: pip install -r requirements.txt)
+# The dashboard (app.py) needs streamlit + plotly, and Streamlit Community
+# Cloud installs this file only — so both are declared here, not just in
+# requirements-dev.txt.
 pandas>=1.5
 numpy>=1.24
 matplotlib>=3.7
 seaborn>=0.12
 yfinance>=0.2.18
+streamlit>=1.49
+plotly>=5.18
 jupyter>=1.0
 notebook>=7.0
