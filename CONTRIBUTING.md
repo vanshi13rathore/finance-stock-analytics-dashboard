@@ -44,7 +44,7 @@ pytest tests/ -q   # 112 tests, must be green before you start
 ## Docs
 
 - User-facing changes need doc updates: behavior → `docs/user-guide.md` or
-  `docs/cli-reference.md`; new metrics → `docs/methodology.md`;
+  `docs/cli-reference.md`; new metrics → `docs/metrics-reference.md`;
   new functions → `docs/api-reference.md`.
 - Keep [README](README.md) concise — details belong in `docs/`.
 - Verify internal Markdown links still resolve (see below).

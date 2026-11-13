@@ -23,8 +23,8 @@ tests/                     # 112 offline tests
   test_app.py              # Streamlit AppTest: widgets, validation, downloads
 data/                      # summary.csv, correlation.csv (+ git-ignored cache)
 images/                    # generated chart PNGs
-screenshots/               # local dashboard captures (not tracked)
-docs/                      # you are here
+screenshots/               # committed dashboard screenshots
+docs/                      # documentation hub (start at index.md)
 ```
 
 Design rules:

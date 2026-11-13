@@ -85,7 +85,7 @@ def sortino_ratio(
 
     Note: an earlier version used ``std()`` of the clipped series, which
     subtracts the mean of the downside values and therefore understates the
-    denominator (overstating Sortino). See docs/methodology.md.
+    denominator (overstating Sortino). See docs/metrics-reference.md.
     """
     daily_rf = (1 + risk_free_rate) ** (1 / TRADING_DAYS) - 1
     excess = returns - daily_rf

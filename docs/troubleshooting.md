@@ -75,7 +75,8 @@ Lower it further if needed: `sample=200`.
 
 ### `streamlit: command not found`
 
-Install dev extras: `pip install -r requirements-dev.txt`.
+Install the runtime dependencies: `pip install -r requirements.txt` (it declares
+`streamlit`).
 
 ### Blank page / old Streamlit deprecation warnings
 
@@ -85,9 +86,9 @@ API and the newer theme options, so it needs **Streamlit ≥ 1.49**
 
 ### `ModuleNotFoundError: No module named 'plotly'`
 
-The dashboard's charts are Plotly; install the dev extras:
-`pip install -r requirements-dev.txt` (Plotly ≥ 5.18). The notebook and CLI still
-use matplotlib and do not need it.
+The dashboard's charts are Plotly; install the runtime dependencies:
+`pip install -r requirements.txt` (Plotly ≥ 5.18). The notebook and CLI use
+matplotlib and do not need it.
 
 ### Charts appear but the page looks unstyled (default Streamlit blue)
 

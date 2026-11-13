@@ -6,7 +6,7 @@ Public interface of the `src/` package. All functions are imported as:
 from src import config, data, metrics, plots, charts, portfolio, theme
 ```
 
-For the *meaning* of each metric, see [Methodology](methodology.md).
+For the *meaning* of each metric, see [Metrics Reference](metrics-reference.md).
 
 ---
 

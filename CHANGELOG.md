@@ -3,6 +3,42 @@
 All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] — Documentation reorganization
+
+Documentation-only release: **no application logic, financial calculation, UI
+behaviour or screenshot changed**. The docs were restructured into a navigable
+hub and the README rebuilt as the project's entry point.
+
+### Added
+
+- `docs/index.md` — navigation hub describing and linking every guide.
+- `docs/metrics-reference.md` — all return, risk and relationship metrics with
+  formulas, conventions and the consolidated limitations list.
+- `docs/portfolio-simulation.md` — the Monte Carlo method, portfolio maths and an
+  explicit table of what the simulation is *not* (no optimiser, no efficient
+  frontier, no forecast).
+
+### Changed
+
+- `README.md` rebuilt around fifteen sections: description, repository and live
+  demo links, stack, features, four screenshots, installation, local run,
+  architecture, metrics, data and range, limitations, documentation index,
+  testing, licence and contribution.
+- `docs/data.md` renamed to `docs/data-and-sources.md` (matching its scope).
+- `docs/methodology.md` split into `docs/metrics-reference.md` and
+  `docs/portfolio-simulation.md`; every inbound link updated.
+- `docs/architecture.md` now describes `screenshots/` as committed rather than
+  git-ignored, and points at the documentation hub.
+- `CONTRIBUTING.md` documentation guidance now targets the new file names.
+- `README.md` keeps the problem statement, project objectives, static
+  Matplotlib figure gallery, roadmap and learning outcomes from the
+  previous version, integrated into the new section order.
+
+### Removed
+
+- `docs/README.md` — superseded by `docs/index.md`.
+- `docs/methodology.md` — content preserved in the two new reference pages.
+
 ## [2.4.0] - 2026-11-12 — Phase 3 QA, financial audit & GitHub preparation
 
 Documentation and labelling release: **no financial formula was changed**, and

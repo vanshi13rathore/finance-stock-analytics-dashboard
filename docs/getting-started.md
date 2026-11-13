@@ -23,11 +23,10 @@ cd finance-stock-analytics-dashboard
 pip install -r requirements.txt
 ```
 
-This installs the core stack: `pandas`, `numpy`, `matplotlib`, `seaborn`,
-`yfinance`, and `jupyter`. The dashboard additionally needs `streamlit` and
-`plotly`, which `requirements-dev.txt` installs.
-
-For tests and the interactive dashboard, install the dev extras instead:
+This installs everything the notebook, CLI and dashboard need: `pandas`,
+`numpy`, `matplotlib`, `seaborn`, `yfinance`, `streamlit`, `plotly` and
+`jupyter`. To run the test suite as well, install the dev extras instead
+(`requirements-dev.txt` simply adds `pytest` on top of this file):
 
 ```bash
 pip install -r requirements-dev.txt
@@ -63,7 +62,6 @@ and writes 10 charts to `images/` plus `summary.csv` / `correlation.csv` to
 ### Option C — Interactive dashboard
 
 ```bash
-pip install -r requirements-dev.txt   # streamlit + plotly + pytest
 streamlit run app.py
 ```
 
@@ -78,11 +76,11 @@ pytest tests/ -q
 ```
 
 Expected result: `112 passed` (financial maths, data layer, theme, chart and
-app-level tests). No test needs network access — they use the cached CSV in `data/` and
-fixed-seed synthetic prices.
+app-level tests). No test needs network access — they use generated fixtures,
+fixed-seed synthetic prices and, when present, the cached CSV in `data/`.
 
 ## 5. Next steps
 
 - New to the analysis? Follow the [User Guide](user-guide.md).
-- Want to understand the math? Read [Methodology](methodology.md).
+- Want to understand the math? Read [Metrics Reference](metrics-reference.md).
 - Something broken? Check [Troubleshooting](troubleshooting.md).

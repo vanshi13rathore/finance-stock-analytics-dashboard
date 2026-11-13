@@ -40,7 +40,7 @@ understand *what* is computed and *why*.
 ## 2. The dashboard (`app.py`)
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -r requirements.txt   # includes streamlit + plotly
 streamlit run app.py
 ```
 
@@ -137,4 +137,4 @@ print(config.BANKS, config.RISK_FREE_RATE, config.MA_SHORT_WINDOW)
 ```
 
 See the [API Reference](api-reference.md) for every public function, and
-[Methodology](methodology.md) for what each metric means.
+[Metrics Reference](metrics-reference.md) for what each metric means.

@@ -22,7 +22,7 @@ a live request and **not independently verified** against another provider.
 | C | −2.5% | 61.4% | −0.07 | −0.11 | −98.0% |
 
 Annualized returns are **arithmetic** (`mean(daily) × 252`), not CAGR — see
-[Methodology](methodology.md#annualized-return--volatility). Over this window
+[Metrics Reference](metrics-reference.md#annualized-return-and-volatility). Over this window
 the compounded rates are lower, and negative for BAC (−7.9%) even though its
 arithmetic figure is positive.
 

@@ -1,4 +1,4 @@
-# 💾 Data
+# 💾 Data & Sources
 
 Where the numbers come from, how they're stored, and how the project stays
 reproducible with or without internet.
@@ -42,7 +42,8 @@ regulatory filing, so:
   cached run can differ slightly for the same dates.
 
 Adding a genuine verification step (a second source plus a tolerance check) is
-listed under Future improvements in the [README](../README.md).
+listed under [Future improvements](../README.md#-future-improvements) in the
+README.
 
 ## Live data (Yahoo Finance)
 
